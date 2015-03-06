@@ -1,0 +1,22 @@
+library(RODBC)
+library(dplyr)
+
+conn <- odbcConnect('EVORA')
+query <- 'select * from vw_regular_season_team_stats  where season = \'2011\' '
+# query <- sqlFetch(conn, sqtable = )
+data <- sqlQuery(conn, query)
+
+clust <- kmeans(data.frame (data$avg_score, data$opponent_avg_score, data$RPI), 10)$cluster
+
+plot( data.frame (data$avg_score, data$opponent_avg_score), pch = clust)
+help(kmeans)
+
+result <- data.frame(data, clust)
+
+query2 <- 'Select * FROM vw_regular_season_compact_results_doubled where season = \'2011\' '
+teamDetails <- data.frame(sqlQuery(conn, query2))
+
+teamExtendedDetails <- merge( x = merge( x = teamDetails, y = result, by.x = "team_A", by.y = "team_id", all.x = TRUE), y = result, by.x = "team_B", by.y = "team_id", all.x = TRUE)
+
+
+clusterWinsLosses <- teamExtendedDetails %>% group_by(clust.x, clust.y) %>% summarise(nWinsA = sum(team_A_score > team_B_score), nLossesA = sum(team_A_score < team_B_score))
