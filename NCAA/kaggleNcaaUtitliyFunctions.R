@@ -14,6 +14,6 @@ logLossFn <- function(y, yHat){
   }
   
   n <- length(y)
-  logLoss <- -(1/n) sum(y*log(yHat) + (1-y)*log(1-yHat))
+  logLoss <- -(1/n)*sum(y*log(yHat) + (1-y)*log(1-yHat))
   return(logLoss)
 }
