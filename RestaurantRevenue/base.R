@@ -38,6 +38,14 @@ combineData <- function(conn){
   submitTestData <- sqlFetch(conn,'restaurant_revenue_prediction.test_data')
   submitTestData$dataType <- 'SUBMIT'
   allData <- rbind(trainData, submitTestData)
+  
+  # now add the categorical variables
+  pVarNames <- paste0('P', 1:37)
+  tmpPVars <- as.data.frame(lapply(allData[, pVarNames], as.factor))
+  names(tmpPVars) <- paste0('P', 1:37, '.cat')
+  
+  allData <- cbind(allData, tmpPVars)
+  
   return(allData)
 }
 
