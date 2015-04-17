@@ -28,7 +28,7 @@ getConn <- function(){
   }
 }
 
-
+conn <- getConn()
 # combine data ------------------------------------------------------------
 #' combine train and test data into one data frame in case of categorical vars
 #' combines into one data frame and tags the data
@@ -36,6 +36,7 @@ combineData <- function(conn){
   trainData <- sqlFetch(conn, 'restaurant_revenue_prediction.training_data')
   trainData$dataType <- 'TRAIN'
   submitTestData <- sqlFetch(conn,'restaurant_revenue_prediction.test_data')
+  submitTestData$revenue <- NA
   submitTestData$dataType <- 'SUBMIT'
   allData <- rbind(trainData, submitTestData)
   
@@ -49,7 +50,17 @@ combineData <- function(conn){
   return(allData)
 }
 
+data <- combineData(conn)
 
+#bootstrap ----------------------------------------------------------------
+# takes 'size' random numbers between 0 and 'max' and changes the entries of 'data's dataType column to 'TEST'. Useful for cross validation.
+bootStrap <- function(data, size, max){
+  selection <- floor(runif(n = size, min = 0, max = max))
+  data$dataType[selection] <- 'TEST'
+  return(data)
+}
+
+dta <- bootStrap(data, 20, 137)
 
 # RMSE --------------------------------------------------------------------
 #' deprecate -- use caret method instead
