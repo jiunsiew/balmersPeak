@@ -54,6 +54,7 @@ data <- combineData(conn)
 
 #bootstrap ----------------------------------------------------------------
 # takes 'size' random numbers between 0 and 'max' and changes the entries of 'data's dataType column to 'TEST'. Useful for cross validation.
+# Or just useful for trying out different sets if training and test data.
 bootStrap <- function(data, size, max){
   selection <- floor(runif(n = size, min = 0, max = max))
   data$dataType[selection] <- 'TEST'
@@ -68,3 +69,5 @@ rmse <- function(prediction, actual){
   rmse <- sqrt(mean(prediction - actual)^2)
   return(rmse)
 }
+
+
